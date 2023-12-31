@@ -24,9 +24,12 @@ let rec runProjects projects =
         match runProject project with
         | Ok(output, err) when output.Trim() = expectedOutput ->
             printfn "success - %s" project
-            printfn "error =>\n%s" err
-            printfn "output =>\n%s" output
-            printfn "error =>\n%s%s" err "\n--------------------------------"
+
+            if err.Length = 0 |> not then
+                err.Trim() |> printfn "(err)\"\"\"\n%s\n\"\"\""
+
+            output.Trim() |> printfn "(out)\"\"\"\n%s\n\"\"\""
+
             runProjects rest
         | Ok(output, err) ->
             printfn "failed - output didn't match expected output - %s%s" project "\nvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"
