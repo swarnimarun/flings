@@ -1,8 +1,12 @@
 ﻿open System.Diagnostics
 open FSharp.CommandLine
 
-let programs =
-    [ "exercises/001_intro", "Hello, world!"; "exercises/002_let", "I am let!" ]
+let programs = [
+    "exercises/001_intro", "Hello, world!"
+    "exercises/002_let", "I am let!"
+    "exercises/002_let", "I am let!"
+    "exercises/002_let", "I am let!"
+]
 
 let executeCommand (executable: string) (args: string) =
     let startInfo = ProcessStartInfo(executable, args)
@@ -12,7 +16,7 @@ let executeCommand (executable: string) (args: string) =
     p.StartInfo <- startInfo
     p.Start() |> ignore
     let outerr = (p.StandardOutput.ReadToEnd(), p.StandardError.ReadToEnd())
-    if p.ExitCode = 0 then outerr |> Ok else outerr |> Error
+    outerr |> if p.ExitCode = 0 then Ok else Error
 
 let runProject project =
     sprintf "run --project %s" project |> executeCommand "dotnet"
@@ -24,12 +28,9 @@ let rec runProjects projects =
         match runProject project with
         | Ok(output, err) when output.Trim() = expectedOutput ->
             printfn "success - %s" project
-
             if err.Length = 0 |> not then
                 err.Trim() |> printfn "(err)\"\"\"\n%s\n\"\"\""
-
             output.Trim() |> printfn "(out)\"\"\"\n%s\n\"\"\""
-
             runProjects rest
         | Ok(output, err) ->
             printfn "failed - output didn't match expected output - %s%s" project "\nvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"
